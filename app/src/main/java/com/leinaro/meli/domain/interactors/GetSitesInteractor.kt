@@ -13,12 +13,12 @@ interface GetSitesInteractor{
 }
 
 class GetSitesDomainInteractor @Inject constructor(
-   // val repository: CategoryRepository,
+    val repository: CategoryRepository,
 ) : GetSitesInteractor {
     override fun execute(): Flow<List<Site>> {
-        return flow { emit(emptyList()) }/*repository.getSites()
+        return repository.getSites()
             .map { sites ->
                 sites.toUiModel()
-            }*/
+            }
     }
 }

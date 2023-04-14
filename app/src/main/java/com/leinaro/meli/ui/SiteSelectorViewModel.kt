@@ -21,9 +21,9 @@ class SiteSelectorViewModel  @Inject constructor(
         )
     }
 
-    //init {
-        //getSites()
-    //}
+    init {
+        getSites()
+    }
 
     fun onSiteSelected(site: Site) {
         viewModelScope.launch {
