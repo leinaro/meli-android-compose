@@ -1,0 +1,4 @@
+<resources>
+  <string name="app_name">Meli</string>
+  <string name="title_activity_site_selector">SiteSelectorActivity</string>
+</resources>
