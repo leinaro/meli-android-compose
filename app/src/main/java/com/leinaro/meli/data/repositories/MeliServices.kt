@@ -23,6 +23,14 @@ interface MeliServices {
         @Query("category") categoryId: String,
         @Query("limit") limit: Int? = null,
     ): List<SearchItemResponse>
+
+    ///items?ids=$ITEM_ID1,$ITEM_ID2
+/*    @GET("sites/{siteId}/search")
+    suspend fun searchItems(
+        @Path("siteId") siteId: String,
+        @Query("category") categoryId: String,
+        @Query("limit") limit: Int? = null,
+    ): List<SearchItemResponse>*/
 }
 
 data class SiteDTO(

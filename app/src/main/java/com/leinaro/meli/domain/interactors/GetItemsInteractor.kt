@@ -22,3 +22,18 @@ class GetItemsDomainInteractor @Inject constructor(
             }
     }
 }
+
+interface GetItemDetailsInteractor {
+    fun execute(categoryId: String): Flow<List<Product>>
+}
+
+class GetItemDetailsDomainInteractor @Inject constructor(
+    private val repository: CategoryRepository,
+) : GetItemDetailsInteractor {
+    override fun execute(categoryId: String): Flow<List<Product>> {
+        return repository.searchItems(categoryId)
+            .map { productsDTO ->
+                productsDTO.toUiModel()
+            }
+    }
+}

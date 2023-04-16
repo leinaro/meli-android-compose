@@ -1,18 +1,18 @@
 package com.leinaro.meli.ui.components
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.grid.GridCells.Adaptive
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -32,6 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,8 +43,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.leinaro.meli.R.drawable
+import com.leinaro.meli.domain.entities.Category
 import com.leinaro.meli.domain.entities.Product
+import com.leinaro.meli.ui.MainActivityRoute
+import com.leinaro.meli.ui.MainUiState
 import com.leinaro.meli.ui.MainViewModel
 
 @Composable
@@ -49,7 +56,6 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val productsByCategory = uiState.productsByCategory
 
     Column {
         Box(
@@ -57,7 +63,7 @@ fun MainScreen(
                 .fillMaxWidth()
                 .padding(8.dp),
             contentAlignment = Alignment.CenterEnd,
-        )  {
+        ) {
             OutlinedButton(
                 modifier = Modifier.wrapContentSize(),
                 onClick = { /*TODO*/ }
@@ -78,16 +84,18 @@ fun MainScreen(
         if (uiState.isLoading) {
             LoadingComponent()
         } else {
-            CategoryGridComponent(productsByCategory)
+            CategoryGridComponent(
+                uiState,
+                viewModel,
+            )
         }
     }
-
 }
-
 
 fun LazyGridScope.categoryGridItemComponent(
     categoryName: String,
     productList: List<Product>,
+    navigateTo: (String) -> Unit = {},
 ) {
     item(
         span = { GridItemSpan(this.maxLineSpan) },
@@ -101,7 +109,9 @@ fun LazyGridScope.categoryGridItemComponent(
         }
     )
     items(productList) { product ->
-        ProductItemComponent(product.name, product.price, product.imageUrl)
+        ProductItemComponent(
+            product, navigateTo
+        )
     }
     item(
         span = { GridItemSpan(this.maxLineSpan) },
@@ -112,15 +122,31 @@ fun LazyGridScope.categoryGridItemComponent(
 }
 
 @Composable
-fun CategoryGridComponent(productsByCategory: Map<String, List<Product>>) {
-    val categories = productsByCategory.keys.toList()
+fun CategoryGridComponent(
+    uiState: MainUiState,
+    viewModel: MainViewModel = hiltViewModel(),
+) {
+    val productsByCategory = uiState.productsByCategory
+    val categories = uiState.categories
+
+    val configuration = LocalConfiguration.current
+
+    val columns = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        6
+    } else {
+        3
+    }
 
     LazyVerticalGrid(
-        columns = Adaptive(minSize = 128.dp)
+        columns = GridCells.Fixed(columns),
     ) {
         categories.forEach { category ->
-            val products = productsByCategory[category].orEmpty()
-            categoryGridItemComponent(category, products)
+            val products = productsByCategory[category.id].orEmpty()
+            categoryGridItemComponent(
+                category.name,
+                products,
+                viewModel::navigateTo,
+            )
         }
 
     }
@@ -130,30 +156,37 @@ fun CategoryGridComponent(productsByCategory: Map<String, List<Product>>) {
 @Composable
 fun CategoryGridComponentPreview() {
     CategoryGridComponent(
-        mapOf(
-            Pair(
-                "Categoria",
-                listOf(
-                    Product(
-                        "producto 1",
-                        "15000",
-                        "producto 3",
-                    ),
-                    Product(
-                        "producto 1",
-                        "15000",
-                        "producto 3",
-                    ),
-                    Product(
-                        "producto 1",
-                        "15000",
-                        "producto 3",
-                    ),
-                    Product(
-                        "producto 1",
-                        "15000",
-                        "producto 3",
-                    ),
+        MainUiState(
+            categories = listOf(Category("123", "Categoria 1")),
+            productsByCategory = mapOf(
+                Pair(
+                    "123",
+                    listOf(
+                        Product(
+                            "producto 1",
+                            "producto 1",
+                            "15000",
+                            "producto 3",
+                        ),
+                        Product(
+                            "producto 1",
+                            "producto 1",
+                            "15000",
+                            "producto 3",
+                        ),
+                        Product(
+                            "producto 1",
+                            "producto 1",
+                            "15000",
+                            "producto 3",
+                        ),
+                        Product(
+                            "producto 1",
+                            "producto 1",
+                            "15000",
+                            "producto 3",
+                        ),
+                    )
                 )
             )
         )
@@ -183,9 +216,8 @@ fun LoadingComponentPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductItemComponent(
-    name: String,
-    price: String,
-    imageUrl: String,
+    product: Product,
+    navigateTo: (String) -> Unit = {},
 ) {
     Card(
         modifier = Modifier
@@ -197,24 +229,33 @@ fun ProductItemComponent(
             modifier = Modifier
                 .wrapContentSize(Alignment.Center)
                 .aspectRatio(0.7f)
-                .clickable(onClick = { }),
+                .clickable(onClick = {
+                    navigateTo(MainActivityRoute.ProductDetailScreen.route.replace("{productId}", product.id))
+                }),
         ) {
             AsyncImage(
+                contentScale = ContentScale.Fit,
+
                 modifier = Modifier
                     .padding(8.dp)
-                    .clip(shape = RoundedCornerShape(16.dp)),
-                model = imageUrl,
+                    .aspectRatio(1f)
+                    .fillMaxWidth()
+                    .clip(shape = RoundedCornerShape(4.dp)),
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(product.imageUrl)
+                    .crossfade(true)
+                    .build(),
                 placeholder = debugPlaceholder(drawable.ic_launcher_background),
                 contentDescription = "Translated description of what the image contains"
             )
             Text(
-                text = name,
+                text = product.name,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
 
             Text(
-                text = price,
+                text = product.price,
                 fontWeight = FontWeight.Normal,
                 color = Color(0xFF322F37),
                 textAlign = TextAlign.Center,
@@ -226,7 +267,9 @@ fun ProductItemComponent(
 @Preview(showBackground = true)
 @Composable
 fun ProductItemComponentPreview() {
-    ProductItemComponent("Producto ABC", "$500.000", "image_url")
+    ProductItemComponent(
+        Product("123","Producto ABC", "$500.000", "image_url")
+    )
 }
 
 @Composable

@@ -18,6 +18,7 @@ class MainViewModel @Inject constructor(
     private val getCategoriesInteractor: GetCategoriesInteractor,
     private val getSelectedSiteInteractor: GetSelectedSiteInteractor,
     private val getItemsInteractor: GetItemsInteractor,
+    //private val getItemDetailsInteractor: GetItemDetailsInteractor,
 ) : BaseViewModel<MainUiState>() {
 
     init {
@@ -53,12 +54,29 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun getItemsByCategory(categoryId: String) {
+        viewModelScope.launch {
+            getItemsInteractor.execute(categoryId)
+                .collect{ productList ->
+                    _uiState.update {
+                        val productsByCategory = it.productsByCategory.toMutableMap().apply {
+                            this [categoryId] = productList
+                        }
+                        it.copy(
+                            productsByCategory = productsByCategory
+                        )
+                    }
+                }
+        }
+    }
+
     private fun getCategories() {
         viewModelScope.launch {
             getCategoriesInteractor.execute()
                 .collect { categories ->
-                     categories.onEach { category ->
-                        }
+                    categories.onEach { category ->
+                        getItemsByCategory(category.id)
+                    }
 
                     _uiState.update {
                         it.copy(
@@ -67,6 +85,12 @@ class MainViewModel @Inject constructor(
                         )
                     }
                 }
+        }
+    }
+
+    fun findProduct(productId: String): Product? {
+        return _uiState.value.productsByCategory.values.flatten().firstOrNull{
+            it.id == productId
         }
     }
     // endregion

@@ -18,5 +18,9 @@ abstract class BaseViewModel<UiState> : ViewModel() {
     val action: LiveData<Action> get() = _action
 
     protected abstract fun getDefault(): UiState
+
+    fun navigateTo(route: String) {
+        _action.postValue(Action.NavigateTo(route))
+    }
 }
 
