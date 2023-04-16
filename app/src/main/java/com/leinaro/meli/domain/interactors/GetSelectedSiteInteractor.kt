@@ -4,21 +4,20 @@ import com.leinaro.meli.data.repositories.CategoryRepository
 import com.leinaro.meli.domain.entities.Site
 import com.leinaro.meli.domain.entities.toUiModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-interface GetSitesInteractor{
-    fun execute(): Flow<List<Site>>
+interface GetSelectedSiteInteractor {
+    fun execute(): Flow<Site?>
 }
 
-class GetSitesDomainInteractor @Inject constructor(
+class GetSelectedSiteDomainInteractor @Inject constructor(
     private val repository: CategoryRepository,
-) : GetSitesInteractor {
-    override fun execute(): Flow<List<Site>> {
-        return repository.getSites()
-            .map { sites ->
-                sites.toUiModel()
+) : GetSelectedSiteInteractor {
+    override fun execute(): Flow<Site?> {
+        return repository.getSelectedSite()
+            .map { siteDTO ->
+                siteDTO?.toUiModel()
             }
     }
 }

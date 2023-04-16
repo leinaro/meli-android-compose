@@ -1,51 +1,67 @@
 package com.leinaro.meli.data.repositories
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.leinaro.meli.data.local.UserDataStore
-import com.leinaro.meli.data.local.dataStore
-import com.leinaro.meli.domain.entities.Site
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 interface CategoryRepository {
     suspend fun setSite(siteId: String)
     fun getSites(): Flow<List<SiteDTO>>
-    fun getSelectedSited() : Flow<String?>
+    fun getSelectedSite(): Flow<SiteDTO?>
     fun getCategories(): Flow<List<CategoryDTO>>
-    fun getCategory(categoryId: String): Flow<CategoryDTO>
+    fun searchItems(categoryId: String):  Flow<List<ProductDTO>>
 }
 
 class Repository @Inject constructor(
-   // private val userDataStore: UserDataStore,
-): CategoryRepository {
+    private val userDataStore: UserDataStore,
+) : CategoryRepository {
     override suspend fun setSite(siteId: String) {
-       //  userDataStore.setSelectedSite(siteId)
+        userDataStore.setSelectedSite(siteId)
     }
 
     override fun getSites(): Flow<List<SiteDTO>> {
         return flow {
             emit(
                 listOf(
-                    SiteDTO("ARG","ARG","Argentina"),
-                    SiteDTO("MXN", "MXN","Mexico"),
-                    SiteDTO("COP", "COP","Colombia"),
+                    SiteDTO("ARG", "ARG", "Argentina"),
+                    SiteDTO("MXN", "MXN", "Mexico"),
+                    SiteDTO("COP", "COP", "Colombia"),
                 )
             )
         }
     }
 
-    override fun getSelectedSited() : Flow<String?>{
-        return flow{}//userDataStore.getSelectedSite()
+    override fun getSelectedSite(): Flow<SiteDTO?> {
+        return combine(
+            userDataStore.getSelectedSiteId(),
+            getSites(),
+        ) { selectedSiteId, sitesDTO ->
+            sitesDTO.firstOrNull { siteDTO ->
+                siteDTO.id == selectedSiteId
+            }
+        }
     }
 
     override fun getCategories(): Flow<List<CategoryDTO>> {
-        return flow{}
+        return flow {
+            val categories = listOf(
+                CategoryDTO(
+                    "Categoria 1",
+                    "Categoria 1",
+
+                    ),
+                CategoryDTO(
+                    "Categoria 2",
+                    "Categoria 2",
+                ),
+            )
+
+            emit(
+                categories
+            )
+        }
         /*return flow {
             /*emit(
                 Result.Loading(
@@ -100,7 +116,40 @@ class Repository @Inject constructor(
         }*/
     }
 
-    override fun getCategory(categoryId: String): Flow<CategoryDTO> {
-        return flow {  }
+    override fun searchItems(categoryId: String): Flow<List<ProductDTO>> {
+        return flow {
+            emit(
+               // SearchItemResponse(results =
+            listOf(
+                ProductDTO(
+                    "producto 1",
+                    "15000",
+                    "producto 3",
+                    "producto 3",
+                    "producto 3",
+                ),
+                ProductDTO(
+                    "producto 1",
+                    "15000",
+                    "producto 3",
+                    "producto 3",
+                    "producto 3",
+                ),
+                ProductDTO(
+                    "producto 1",
+                    "15000",
+                    "producto 3",
+                    "producto 3",
+                    "producto 3",
+                ),
+                ProductDTO(
+                    "producto 1",
+                    "15000",
+                    "producto 3",
+                    "producto 3",
+                    "producto 3",
+                ),
+            ))//)
+        }
     }
 }

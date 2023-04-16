@@ -1,6 +1,5 @@
 package com.leinaro.meli.ui.components
 
-import android.content.res.Resources.Theme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,17 +20,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.leinaro.meli.domain.entities.Site
-import com.leinaro.meli.ui.MainViewModel
 import com.leinaro.meli.ui.SiteSelectorViewModel
 
 @Composable
 fun SiteSelectorComponent(
-    viewModel: SiteSelectorViewModel = viewModel(),
+    viewModel: SiteSelectorViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -39,21 +36,20 @@ fun SiteSelectorComponent(
         sites = uiState.sites,
         onSiteClick = viewModel::onSiteSelected
     )
-
 }
 
 @Composable
 fun SiteSelectorView(
     sites: List<Site>,
     onSiteClick: (Site) -> Unit = {},
-){
+) {
     LazyColumn(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(8.dp)
             .fillMaxSize()
-    ){
+    ) {
         item {
             Text(
                 modifier = Modifier
@@ -73,7 +69,7 @@ fun SiteSelectorView(
                     .width(1.dp)
             )
         }
-        items(sites){ site ->
+        items(sites) { site ->
             Column {
                 Text(
                     modifier = Modifier
@@ -81,8 +77,7 @@ fun SiteSelectorView(
                         .clickable {
                             onSiteClick(site)
                         }
-                        .padding(8.dp)
-                    ,
+                        .padding(8.dp),
                     text = site.name,
                     textAlign = TextAlign.Center,
                 )
@@ -103,9 +98,9 @@ fun SiteSelectorView(
 fun SiteSelectorViewPreview() {
     SiteSelectorView(
         listOf(
-            Site("","Argentina"),
-            Site("","Mexico"),
-            Site("","Colombia"),
+            Site("", "Argentina"),
+            Site("", "Mexico"),
+            Site("", "Colombia"),
         )
     )
 }

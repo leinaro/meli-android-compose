@@ -7,36 +7,33 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.leinaro.meli.data.local.PreferencesKeys.SELECTED_SITE_ID
-import com.leinaro.meli.data.repositories.SiteDTO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-// At the top level of your kotlin file:
 private const val USER_SETTINGS = "user_settings"
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_SETTINGS)
+
 private object PreferencesKeys {
     val SELECTED_SITE_ID = stringPreferencesKey("selected_site_id")
 }
+
 class UserDataStore @Inject constructor(
     private val context: Context,
 ) {
-
     private val selectedSiteFlow: Flow<String?> = context.dataStore.data
         .map { preferences ->
             val selectedSite = preferences[SELECTED_SITE_ID]
             selectedSite
         }
 
-    fun getSelectedSite() : Flow<String?> {
+    fun getSelectedSiteId(): Flow<String?> {
         return selectedSiteFlow
     }
 
-    suspend fun setSelectedSite(siteId: String){
+    suspend fun setSelectedSite(siteId: String) {
         context.dataStore.edit { settings ->
             settings[SELECTED_SITE_ID] = siteId
         }
-
     }
-
 }

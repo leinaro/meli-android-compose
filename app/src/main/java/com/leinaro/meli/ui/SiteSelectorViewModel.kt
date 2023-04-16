@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.leinaro.meli.domain.entities.Site
 import com.leinaro.meli.domain.interactors.GetSitesInteractor
 import com.leinaro.meli.domain.interactors.SelectSiteInteractor
+import com.leinaro.meli.ui.common.Action
 import com.leinaro.meli.ui.common.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -11,28 +12,34 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SiteSelectorViewModel  @Inject constructor(
+class SiteSelectorViewModel @Inject constructor(
     private val getSitesInteractor: GetSitesInteractor,
-    //private val selectSiteInteractor : SelectSiteInteractor,
-): BaseViewModel<SiteSelectorUiState>() {
+    private val selectSiteInteractor: SelectSiteInteractor,
+) : BaseViewModel<SiteSelectorUiState>() {
+    init {
+        getSites()
+    }
+
+    // region public methods
+    fun onSiteSelected(site: Site) {
+        viewModelScope.launch {
+            selectSiteInteractor.execute(site)
+            _action.postValue(
+                Action.NavigateToActivity.Main)
+        }
+    }
+    // endregion
+
+    // region override methods
     override fun getDefault(): SiteSelectorUiState {
         return SiteSelectorUiState(
             listOf()
         )
     }
+    // endregion
 
-    init {
-        getSites()
-    }
-
-    fun onSiteSelected(site: Site) {
-        viewModelScope.launch {
-            //selectSiteInteractor.execute(site)
-
-        }
-    }
-
-    fun getSites(){
+    // region private methods
+    private fun getSites() {
         viewModelScope.launch {
             getSitesInteractor.execute()
                 .collect { sites ->
@@ -42,6 +49,7 @@ class SiteSelectorViewModel  @Inject constructor(
                 }
         }
     }
+    // endregion
 }
 
 data class SiteSelectorUiState(

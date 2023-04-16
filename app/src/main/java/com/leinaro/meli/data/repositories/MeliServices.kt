@@ -49,5 +49,8 @@ class ProductDTO(
   //  var pictures: List<PicturesRemote>?,
 )
 data class SearchItemResponse(
+    //site_id
+    //country_default_time_zone
+    //paging
     val results: List<ProductDTO>,
 )

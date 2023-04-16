@@ -1,6 +1,5 @@
 package com.leinaro.meli.ui
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,18 +7,19 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.leinaro.meli.ui.common.Action.NavigateToMainActivity
+import com.leinaro.meli.ui.common.Action.NavigateTo
+import com.leinaro.meli.ui.common.Action.NavigateToActivity
 import com.leinaro.meli.ui.components.SiteSelectorComponent
 import com.leinaro.meli.ui.ui.theme.MeliTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,46 +34,50 @@ class SiteSelectorActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    /*LaunchedEffect(Unit) {
-                        // observeAction(viewModel.action)
-                        // Show snackbar using a coroutine, when the coroutine is cancelled the
-                        // snackbar will automatically dismiss. This coroutine will cancel whenever
-                        // `state.hasError` is false, and only start when `state.hasError` is true
-                        // (due to the above if-check), or if `scaffoldState.snackbarHostState` changes.
-
-                    }*//*
+                    val viewModel = hiltViewModel<SiteSelectorViewModel>()
                     val navController = rememberNavController()
+
+                    LaunchedEffect(viewModel.action) {
+                        observeAction(
+                            viewModel = viewModel,
+                            lifecycleOwner = this@SiteSelectorActivity,
+                            navController = navController,
+                            activity = this@SiteSelectorActivity)
+                    }
                     NavHost(
                         navController = navController,
                         startDestination = SiteSelectorActivityRoute.SiteSelectorScreen.route,
                     ) {
-                        composable(SiteSelectorActivityRoute.SiteSelectorScreen.route){*/
-                            SiteSelectorComponent()
-                       /* }
-                        composable(SiteSelectorActivityRoute.MainActivity.route) {
-                            val context = LocalContext.current
-                            context.startActivity(Intent(context, MainActivity::class.java))
+                        composable(SiteSelectorActivityRoute.SiteSelectorScreen.route) {
+                            SiteSelectorComponent(viewModel = viewModel)
                         }
-                    }*/
-                   // val viewModel: SiteSelectorViewModel = viewModel()
-
-                    /*val context = LocalContext.current
-                    */
+                    }
                 }
             }
         }
     }
 }
 
-private sealed class SiteSelectorActivityRoute(val route: String) {
-    object SiteSelectorScreen: SiteSelectorActivityRoute(route = "SiteSelectorScreen")
-    object MainActivity: SiteSelectorActivityRoute(route = "MainActivity")
-}
-
 private fun observeAction(
-
+    viewModel: SiteSelectorViewModel,
+    activity: ComponentActivity,
+    lifecycleOwner: LifecycleOwner,
+    navController: NavController,
 ) {
+    viewModel.action.observe(lifecycleOwner) { action ->
+        when (action) {
+            is NavigateToActivity.Main->{
+                activity.startActivity(Intent(activity, MainActivity::class.java))
+            }
+            is NavigateToActivity.SiteSelector -> {
+                activity.startActivity(Intent(activity, SiteSelectorActivity::class.java))
+            }
+            is NavigateTo -> {
+                navController.navigate(action.route)
+            }
 
+        }
+    }
 }
 
 @Preview(showBackground = true)

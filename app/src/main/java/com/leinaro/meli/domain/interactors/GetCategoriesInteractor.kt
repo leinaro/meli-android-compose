@@ -12,7 +12,7 @@ interface GetCategoriesInteractor {
 }
 
 class GetCategoriesDomainInteractor @Inject constructor(
-    val repository: CategoryRepository,
+    private val repository: CategoryRepository,
 ) : GetCategoriesInteractor {
     override fun execute(): Flow<List<Category>> {
         return repository.getCategories()

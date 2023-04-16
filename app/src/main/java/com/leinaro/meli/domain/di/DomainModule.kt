@@ -6,6 +6,10 @@ import com.leinaro.meli.data.repositories.CategoryRepository
 import com.leinaro.meli.data.repositories.Repository
 import com.leinaro.meli.domain.interactors.GetCategoriesDomainInteractor
 import com.leinaro.meli.domain.interactors.GetCategoriesInteractor
+import com.leinaro.meli.domain.interactors.GetItemsDomainInteractor
+import com.leinaro.meli.domain.interactors.GetItemsInteractor
+import com.leinaro.meli.domain.interactors.GetSelectedSiteDomainInteractor
+import com.leinaro.meli.domain.interactors.GetSelectedSiteInteractor
 import com.leinaro.meli.domain.interactors.GetSitesDomainInteractor
 import com.leinaro.meli.domain.interactors.GetSitesInteractor
 import com.leinaro.meli.domain.interactors.SelectSiteDomainInteractor
@@ -25,20 +29,31 @@ abstract class BindsDomainModule {
     @Singleton
     @Binds
     abstract fun bindsGetCategoriesInteractor(
-        getCategoriesDomainInteractor: GetCategoriesDomainInteractor
+        getCategoriesDomainInteractor: GetCategoriesDomainInteractor,
     ): GetCategoriesInteractor
 
     @Singleton
     @Binds
-    abstract fun bindGetSitesInteractor(
-        getSitesDomainInteractor: GetSitesDomainInteractor
+    abstract fun bindsGetSitesInteractor(
+        getSitesDomainInteractor: GetSitesDomainInteractor,
     ): GetSitesInteractor
 
     @Singleton
     @Binds
     abstract fun bindsSelectSiteInteractor(
-        selectSiteInteractor: SelectSiteDomainInteractor
+        selectSiteInteractor: SelectSiteDomainInteractor,
     ): SelectSiteInteractor
+
+    @Singleton
+    @Binds
+    abstract fun bindsGetSelectedSiteInteractor(
+        getSelectedSiteInteractor: GetSelectedSiteDomainInteractor,
+    ): GetSelectedSiteInteractor
+    @Singleton
+    @Binds
+    abstract fun bindsGetItemsInteractor(
+        getItemsDomainInteractor: GetItemsDomainInteractor,
+    ): GetItemsInteractor
 }
 
 @Module
@@ -48,7 +63,7 @@ abstract class BindsDataModule {
     @Singleton
     @Binds
     abstract fun bindGetCategoriesInteractor(
-        repository: Repository
+        repository: Repository,
     ): CategoryRepository
 }
 
