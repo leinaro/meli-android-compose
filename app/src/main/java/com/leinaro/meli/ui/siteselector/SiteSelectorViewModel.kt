@@ -1,4 +1,4 @@
-package com.leinaro.meli.ui
+package com.leinaro.meli.ui.siteselector
 
 import androidx.lifecycle.viewModelScope
 import com.leinaro.meli.domain.entities.Site
@@ -25,16 +25,15 @@ class SiteSelectorViewModel @Inject constructor(
         viewModelScope.launch {
             selectSiteInteractor.execute(site)
             _action.postValue(
-                Action.NavigateToActivity.Main)
+                Action.NavigateToActivity.Main
+            )
         }
     }
     // endregion
 
     // region override methods
     override fun getDefault(): SiteSelectorUiState {
-        return SiteSelectorUiState(
-            listOf()
-        )
+        return SiteSelectorUiState()
     }
     // endregion
 
@@ -44,7 +43,10 @@ class SiteSelectorViewModel @Inject constructor(
             getSitesInteractor.execute()
                 .collect { sites ->
                     _uiState.update {
-                        it.copy(sites = sites)
+                        it.copy(
+                            isLoading = false,
+                            sites = sites
+                        )
                     }
                 }
         }
@@ -53,5 +55,6 @@ class SiteSelectorViewModel @Inject constructor(
 }
 
 data class SiteSelectorUiState(
-    val sites: List<Site>,
+    val isLoading: Boolean = true,
+    val sites: List<Site> = listOf(),
 )

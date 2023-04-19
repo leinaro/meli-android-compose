@@ -1,41 +1,51 @@
-package com.leinaro.meli.ui
+package com.leinaro.meli.ui.main
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.leinaro.meli.ui.common.Action.NavigateTo
 import com.leinaro.meli.ui.common.Action.NavigateToActivity
-import com.leinaro.meli.ui.components.MainScreen
-import com.leinaro.meli.ui.components.ProductDetailScreen
+import com.leinaro.meli.ui.common.ScaffoldViewState
+import com.leinaro.meli.ui.common.TopAppBar
+import com.leinaro.meli.ui.siteselector.SiteSelectorActivity
 import com.leinaro.meli.ui.theme.MeliTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MeliTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     val viewModel = hiltViewModel<MainViewModel>()
                     val navController = rememberNavController()
+                    var scaffoldViewState: ScaffoldViewState? by remember {
+                        mutableStateOf(null)
+                    }
 
                     LaunchedEffect(viewModel.action) {
                         observeAction(
@@ -45,32 +55,26 @@ class MainActivity : ComponentActivity() {
                             activity = this@MainActivity
                         )
                     }
-                    NavHost(
-                        navController = navController,
-                        startDestination = MainActivityRoute.MainScreen.route,
-                    ) {
-                        composable(MainActivityRoute.MainScreen.route) {
-                            MainScreen(viewModel)
-                        }
-                        composable(
-                            MainActivityRoute.ProductDetailScreen.route,
-                            arguments = listOf(
-                                navArgument("productId") { type = NavType.StringType })
-                        ) { backStackEntry ->
-                            val productId = backStackEntry.arguments?.getString("productId")
-                            productId?.let {
-                                val product = viewModel.findProduct(productId)
-                                product?.let {
-                                    ProductDetailScreen(product)
-                                } ?: run {
-                                    // show error
-                                }
-                            } ?: run {
-                                // show error
+
+                    Scaffold(
+
+                        topBar = {
+                            scaffoldViewState?.let { scaffoldViewState->
+                                TopAppBar(scaffoldViewState)
                             }
+                        },
+                        floatingActionButton = {}
+                    ) { paddingValues ->
+                        Box(modifier = Modifier.padding(paddingValues = paddingValues)){
+                            MainNavHostComponent(
+                                navController = navController,
+                                viewModel = viewModel,
+                                updateScaffoldViewState = { newScaffoldViewState ->
+                                    scaffoldViewState = newScaffoldViewState
+                                }
+                            )
                         }
                     }
-
                 }
             }
         }

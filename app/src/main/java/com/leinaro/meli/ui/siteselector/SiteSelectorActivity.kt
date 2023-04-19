@@ -1,4 +1,4 @@
-package com.leinaro.meli.ui
+package com.leinaro.meli.ui.siteselector
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +10,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
@@ -20,7 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.leinaro.meli.ui.common.Action.NavigateTo
 import com.leinaro.meli.ui.common.Action.NavigateToActivity
-import com.leinaro.meli.ui.components.SiteSelectorComponent
+import com.leinaro.meli.ui.main.MainActivity
 import com.leinaro.meli.ui.ui.theme.MeliTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,14 +41,15 @@ class SiteSelectorActivity : ComponentActivity() {
                             viewModel = viewModel,
                             lifecycleOwner = this@SiteSelectorActivity,
                             navController = navController,
-                            activity = this@SiteSelectorActivity)
+                            activity = this@SiteSelectorActivity
+                        )
                     }
                     NavHost(
                         navController = navController,
                         startDestination = SiteSelectorActivityRoute.SiteSelectorScreen.route,
                     ) {
                         composable(SiteSelectorActivityRoute.SiteSelectorScreen.route) {
-                            SiteSelectorComponent(viewModel = viewModel)
+                            SiteSelectorScreen(viewModel = viewModel)
                         }
                     }
                 }
@@ -66,8 +66,10 @@ private fun observeAction(
 ) {
     viewModel.action.observe(lifecycleOwner) { action ->
         when (action) {
-            is NavigateToActivity.Main->{
-                activity.startActivity(Intent(activity, MainActivity::class.java))
+            is NavigateToActivity.Main -> {
+                val intent = Intent(activity, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                activity.startActivity(intent)
             }
             is NavigateToActivity.SiteSelector -> {
                 activity.startActivity(Intent(activity, SiteSelectorActivity::class.java))
@@ -84,6 +86,6 @@ private fun observeAction(
 @Composable
 fun DefaultPreview() {
     MeliTheme {
-        SiteSelectorComponent()
+        SiteSelectorScreen()
     }
 }

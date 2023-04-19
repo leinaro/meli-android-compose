@@ -1,17 +1,17 @@
 package com.leinaro.meli.domain.entities
 
-import com.leinaro.meli.data.repositories.SiteDTO
+import com.leinaro.meli.data.repositories.SiteResponse
 
 data class Site (
     val id: String,
     val name: String,
 )
 
-fun SiteDTO.toUiModel(): Site = Site(
+fun SiteResponse.toUiModel(): Site = Site(
     id = id,
     name = name,
 )
 
-fun List<SiteDTO>.toUiModel() = map { site ->
+fun List<SiteResponse>.toUiModel() = map { site ->
     site.toUiModel()
 }

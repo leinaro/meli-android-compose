@@ -1,4 +1,4 @@
-package com.leinaro.meli.ui
+package com.leinaro.meli.ui.main
 
 import androidx.lifecycle.viewModelScope
 import com.leinaro.meli.domain.entities.Category
@@ -54,13 +54,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun getItemsByCategory(categoryId: String) {
+    fun getItemsByCategory(categoryId: String) {
         viewModelScope.launch {
             getItemsInteractor.execute(categoryId)
-                .collect{ productList ->
+                .collect { productList ->
                     _uiState.update {
                         val productsByCategory = it.productsByCategory.toMutableMap().apply {
-                            this [categoryId] = productList
+                            this[categoryId] = productList
                         }
                         it.copy(
                             productsByCategory = productsByCategory
@@ -74,10 +74,6 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             getCategoriesInteractor.execute()
                 .collect { categories ->
-                    categories.onEach { category ->
-                        getItemsByCategory(category.id)
-                    }
-
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -89,9 +85,33 @@ class MainViewModel @Inject constructor(
     }
 
     fun findProduct(productId: String): Product? {
-        return _uiState.value.productsByCategory.values.flatten().firstOrNull{
+        return _uiState.value.productsByCategory.values.flatten().firstOrNull {
             it.id == productId
         }
+    }
+
+    fun searchProduct(query: String) {
+        viewModelScope.launch {
+            getItemsInteractor.execute(query = query)
+                .collect { products ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            lastQuery = query,
+                            productsByQuery = products,
+                        )
+                }
+            }
+        }
+    }
+
+    fun onChageSiteClick() {
+            viewModelScope.launch {
+                _action.postValue(
+                    Action.NavigateToActivity.SiteSelector
+                )
+            }
+
     }
     // endregion
 
@@ -102,4 +122,6 @@ data class MainUiState(
     val siteName: String = "",
     val categories: List<Category> = listOf(),
     val productsByCategory: Map<String, List<Product>> = mapOf(),
+    val lastQuery: String? = null,
+    val productsByQuery: List<Product> = listOf(),
 )

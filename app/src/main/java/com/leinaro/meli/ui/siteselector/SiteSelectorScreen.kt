@@ -1,4 +1,4 @@
-package com.leinaro.meli.ui.components
+package com.leinaro.meli.ui.siteselector
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,18 +24,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leinaro.meli.domain.entities.Site
-import com.leinaro.meli.ui.SiteSelectorViewModel
+import com.leinaro.meli.ui.common.LoadingComponent
 
 @Composable
-fun SiteSelectorComponent(
+fun SiteSelectorScreen(
     viewModel: SiteSelectorViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    SiteSelectorView(
-        sites = uiState.sites,
-        onSiteClick = viewModel::onSiteSelected
-    )
+    if (uiState.isLoading) {
+        LoadingComponent()
+    } else {
+        SiteSelectorView(
+            sites = uiState.sites,
+            onSiteClick = viewModel::onSiteSelected
+        )
+    }
 }
 
 @Composable

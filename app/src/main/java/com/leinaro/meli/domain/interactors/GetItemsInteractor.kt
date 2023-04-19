@@ -9,20 +9,23 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 interface GetItemsInteractor {
-    fun execute(categoryId: String): Flow<List<Product>>
+    fun execute(
+        categoryId: String? = null,
+        query: String? = null,
+    ): Flow<List<Product>>
 }
 
 class GetItemsDomainInteractor @Inject constructor(
     private val repository: CategoryRepository,
 ) : GetItemsInteractor {
-    override fun execute(categoryId: String): Flow<List<Product>> {
-        return repository.searchItems(categoryId)
+    override fun execute(categoryId: String?, query: String?): Flow<List<Product>> {
+        return repository.searchItems(categoryId, query)
             .map { productsDTO ->
                 productsDTO.toUiModel()
             }
     }
 }
-
+/*
 interface GetItemDetailsInteractor {
     fun execute(categoryId: String): Flow<List<Product>>
 }
@@ -30,10 +33,17 @@ interface GetItemDetailsInteractor {
 class GetItemDetailsDomainInteractor @Inject constructor(
     private val repository: CategoryRepository,
 ) : GetItemDetailsInteractor {
-    override fun execute(categoryId: String): Flow<List<Product>> {
-        return repository.searchItems(categoryId)
+    override fun execute(
+        categoryId: String,
+        query: String?
+    ): Flow<List<Product>> {
+        return repository.searchItems(
+            categoryId = categoryId,
+            query = query,
+        )
             .map { productsDTO ->
                 productsDTO.toUiModel()
             }
     }
 }
+*/
