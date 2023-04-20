@@ -37,13 +37,13 @@ fun ProductItemComponent(
     navigateTo: (String) -> Unit = {},
 ) {
     Card(
-        modifier = Modifier
-            .padding(8.dp),
+        modifier = Modifier.padding(4.dp),
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .padding(4.dp)
                 .wrapContentSize(Alignment.Center)
                 .aspectRatio(0.7f)
                 .clickable(onClick = {
@@ -67,7 +67,7 @@ fun ProductItemComponent(
                     .crossfade(true)
                     .build(),
                 placeholder = debugPlaceholder(drawable.ic_launcher_background),
-                contentDescription = "Translated description of what the image contains"
+                contentDescription = null
             )
             Text(
                 modifier = Modifier

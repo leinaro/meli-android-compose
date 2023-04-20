@@ -77,7 +77,6 @@ private fun observeAction(
             is NavigateTo -> {
                 navController.navigate(action.route)
             }
-
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.leinaro.meli.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,7 +57,9 @@ fun ProductDetailScreen(product: Product) {
                 .crossfade(true)
                 .build(),
             placeholder = debugPlaceholder(drawable.ic_launcher_background),
-            contentDescription = "Translated description of what the image contains"
+            contentDescription = null,
+            onError = { Log.e("iarl", "error cargando imagen ${it.result.throwable.message}")
+            it.result.throwable.printStackTrace()}
         )
 
         Row(
