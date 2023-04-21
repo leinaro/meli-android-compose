@@ -1,6 +1,6 @@
 package com.leinaro.meli.data.repositories
 
-class CategoryDTO(
+class CategoryResponse(
     val id: String,
     val name: String,
 )

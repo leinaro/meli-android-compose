@@ -1,6 +1,6 @@
 package com.leinaro.meli.domain.interactors
 
-import com.leinaro.meli.data.repositories.CategoryRepository
+import com.leinaro.meli.data.repositories.MeliRepository
 import com.leinaro.meli.domain.entities.Site
 import com.leinaro.meli.domain.entities.toUiModel
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +12,7 @@ interface GetSelectedSiteInteractor {
 }
 
 class GetSelectedSiteDomainInteractor @Inject constructor(
-    private val repository: CategoryRepository,
+    private val repository: MeliRepository,
 ) : GetSelectedSiteInteractor {
     override fun execute(): Flow<Site?> {
         return repository.getSelectedSite()

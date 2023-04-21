@@ -89,7 +89,18 @@ dependencies {
   implementation "androidx.datastore:datastore:1.0.0"
   implementation "androidx.datastore:datastore-core:1.0.0"
 
+  // region unit tests
   testImplementation 'junit:junit:4.13.2'
+  testImplementation 'androidx.test:core:1.5.0'
+  testImplementation 'org.mockito:mockito-core:3.9.0'
+  testImplementation 'androidx.arch.core:core-testing:2.2.0'
+  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.4'
+  testImplementation "com.squareup.okhttp3:mockwebserver:5.0.0-alpha.2"
+  testImplementation 'org.mockito:mockito-inline:2.13.0'
+  testImplementation "org.mockito.kotlin:mockito-kotlin:3.2.0"
+  testImplementation "io.mockk:mockk:+"
+  // endregion
+
   androidTestImplementation 'androidx.test.ext:junit:1.1.5'
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
   androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"

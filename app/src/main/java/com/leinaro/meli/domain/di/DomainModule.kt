@@ -2,7 +2,7 @@ package com.leinaro.meli.domain.di
 
 import android.content.Context
 import com.leinaro.meli.data.local.UserDataStore
-import com.leinaro.meli.data.repositories.CategoryRepository
+import com.leinaro.meli.data.repositories.MeliRepository
 import com.leinaro.meli.data.repositories.Repository
 import com.leinaro.meli.domain.interactors.GetCategoriesDomainInteractor
 import com.leinaro.meli.domain.interactors.GetCategoriesInteractor
@@ -64,7 +64,7 @@ abstract class BindsDataModule {
     @Binds
     abstract fun bindGetCategoriesInteractor(
         repository: Repository,
-    ): CategoryRepository
+    ): MeliRepository
 }
 
 @Module

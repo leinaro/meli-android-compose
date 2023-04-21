@@ -6,21 +6,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import retrofit2.http.Query
 import javax.inject.Inject
 
-interface CategoryRepository {
+interface MeliRepository {
     suspend fun setSite(siteId: String)
     fun getSites(): Flow<List<SiteResponse>>
     fun getSelectedSite(): Flow<SiteResponse?>
-    fun getCategories(): Flow<List<CategoryDTO>>
+    fun getCategories(): Flow<List<CategoryResponse>>
     fun searchItems(categoryId: String?, query: String?): Flow<List<ProductResponse>>
 }
 
 class Repository @Inject constructor(
     private val userDataStore: UserDataStore,
     private val meliServices: MeliServices,
-) : CategoryRepository {
+) : MeliRepository {
+
     override suspend fun setSite(siteId: String) {
         userDataStore.setSelectedSite(siteId)
     }
@@ -44,7 +44,7 @@ class Repository @Inject constructor(
         }
     }
 
-    override fun getCategories(): Flow<List<CategoryDTO>> {
+    override fun getCategories(): Flow<List<CategoryResponse>> {
         return userDataStore.getSelectedSiteId()
             .map { selectedId ->
                 selectedId?.let {

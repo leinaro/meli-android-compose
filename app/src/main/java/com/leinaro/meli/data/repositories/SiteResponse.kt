@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class SiteResponse(
     @SerializedName("default_currency_id")
-    val defaultCurrencyDd: String,
+    val defaultCurrencyId: String,
     @SerializedName("id")
     val id: String,
     @SerializedName("name")

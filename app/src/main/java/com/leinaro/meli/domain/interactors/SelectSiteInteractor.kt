@@ -1,6 +1,6 @@
 package com.leinaro.meli.domain.interactors
 
-import com.leinaro.meli.data.repositories.CategoryRepository
+import com.leinaro.meli.data.repositories.MeliRepository
 import com.leinaro.meli.domain.entities.Site
 import javax.inject.Inject
 
@@ -9,7 +9,7 @@ interface SelectSiteInteractor {
 }
 
 class SelectSiteDomainInteractor @Inject constructor(
-    private val repository: CategoryRepository,
+    private val repository: MeliRepository,
 ) : SelectSiteInteractor {
     override suspend fun execute(site: Site) {
         repository.setSite(site.id)

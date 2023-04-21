@@ -1,6 +1,6 @@
 package com.leinaro.meli.data.remote
 
-import com.leinaro.meli.data.repositories.CategoryDTO
+import com.leinaro.meli.data.repositories.CategoryResponse
 import com.leinaro.meli.data.repositories.ProductResponse
 import com.leinaro.meli.data.repositories.SiteResponse
 import retrofit2.http.GET
@@ -15,7 +15,7 @@ interface MeliServices {
     suspend fun getCategories(
         @Path("siteId") siteId: String,
         @Query("limit") limit: Int? = null,
-    ): List<CategoryDTO>
+    ): List<CategoryResponse>
 
     @GET("sites/{siteId}/search")
     suspend fun searchItems(
